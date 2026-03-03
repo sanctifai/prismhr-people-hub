@@ -7,7 +7,7 @@ export default async function DepartmentsPage() {
   const { data: { user } } = await supabase.auth.getUser()
   const isAdmin = user?.app_metadata?.role === 'admin'
 
-  const { data: departments } = await supabase
+  const { data: departments, error: deptError } = await supabase
     .from('departments')
     .select(`
       id,
@@ -21,6 +21,8 @@ export default async function DepartmentsPage() {
     `)
     .order('name')
 
+  if (deptError) console.error('[DepartmentsPage] fetch failed:', deptError.message)
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -32,6 +34,7 @@ export default async function DepartmentsPage() {
         </div>
         {isAdmin && (
           <button
+            type="button"
             disabled
             title="Coming soon"
             className="inline-flex items-center gap-2 rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white opacity-50 cursor-not-allowed"
@@ -45,16 +48,16 @@ export default async function DepartmentsPage() {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">
                 Department
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">
                 Description
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">
                 Head
               </th>
-              <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wide text-gray-500">
+              <th scope="col" className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wide text-gray-500">
                 Members
               </th>
             </tr>
@@ -62,12 +65,13 @@ export default async function DepartmentsPage() {
           <tbody className="divide-y divide-gray-100">
             {departments?.map((dept) => {
               const head = dept.head as { first_name: string; last_name: string } | null
-              const count = (dept.employees as unknown as { count: number }[])?.[0]?.count ?? 0
+              const raw = (dept.employees as unknown as { count: string }[])?.[0]?.count
+              const count = raw != null ? Number(raw) : 0
 
               return (
                 <tr
                   key={dept.id}
-                  className="hover:bg-gray-50 cursor-pointer transition-colors"
+                  className="hover:bg-gray-50 transition-colors"
                 >
                   <td className="px-6 py-4">
                     <Link
