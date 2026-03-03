@@ -31,8 +31,10 @@ export default async function DepartmentDetailPage({
     .eq('id', id)
     .single()
 
-  if (deptError) console.error('[DepartmentDetailPage] dept fetch failed:', deptError.message)
-  if (!dept) notFound()
+  if (deptError || !dept) {
+    if (deptError) console.error('[DepartmentDetailPage] dept fetch failed:', deptError.message)
+    notFound()
+  }
 
   // Fetch members of this department
   const { data: members, error: membersError } = await supabase
@@ -123,7 +125,7 @@ export default async function DepartmentDetailPage({
                 {members.map((emp) => {
                   const isHead = head?.id === emp.id
                   const startDate = emp.start_date
-                    ? new Date(emp.start_date).toLocaleDateString('en-US', {
+                    ? new Date(emp.start_date + 'T00:00:00').toLocaleDateString('en-US', {
                         month: 'short',
                         year: 'numeric',
                       })
@@ -138,12 +140,10 @@ export default async function DepartmentDetailPage({
                         >
                           {emp.first_name} {emp.last_name}
                           {isHead && (
-                            <span
-                              title="Department Head"
-                              className="ml-1.5 text-yellow-500"
-                            >
-                              ★
-                            </span>
+                            <>
+                              <span aria-hidden="true" className="ml-1.5 text-yellow-500">★</span>
+                              <span className="sr-only">Department Head</span>
+                            </>
                           )}
                         </Link>
                       </td>
