@@ -64,7 +64,7 @@ export default async function DepartmentsPage() {
           </thead>
           <tbody className="divide-y divide-gray-100">
             {departments?.map((dept) => {
-              const head = dept.head as { first_name: string; last_name: string } | null
+              const head = dept.head as unknown as { first_name: string; last_name: string } | null
               const raw = (dept.employees as unknown as { count: string }[])?.[0]?.count
               const count = raw != null ? Number(raw) : 0
 

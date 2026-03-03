@@ -45,7 +45,7 @@ export default async function DepartmentDetailPage({
 
   if (membersError) console.error('[DepartmentDetailPage] members fetch failed:', membersError.message)
 
-  const head = dept.head as {
+  const head = dept.head as unknown as {
     id: string
     first_name: string
     last_name: string
