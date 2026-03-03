@@ -91,7 +91,19 @@ A landing page showing key metrics at a glance.
 - Department breakdown (count per department)
 - Recent hires (last 30 days)
 
-### Feature 4: Seed Data
+### Feature 4: Authentication & Row-Level Security
+
+Simple login so only authorized users can access the system.
+
+**Requirements:**
+- Login page using Supabase Auth (email/password)
+- Protect all routes — redirect to login if not authenticated
+- RLS policies on all tables — must be authenticated to read or write
+- Sign-out button in the navigation
+
+**Data Model:** Uses Supabase's built-in `auth.users` table — no custom user table needed.
+
+### Feature 5: Seed Data
 
 Pre-populated data so the app looks real immediately after setup.
 
@@ -103,7 +115,8 @@ Pre-populated data so the app looks real immediately after setup.
 ## Pages
 
 ```
-/                    → Dashboard
+/login               → Login page (Supabase Auth)
+/                    → Dashboard (protected)
 /employees           → Employee directory (table + search)
 /employees/[id]      → Employee profile
 /employees/new       → Add employee form
@@ -115,8 +128,7 @@ Pre-populated data so the app looks real immediately after setup.
 ## Out of Scope (for this version)
 
 - Time-off / PTO tracking
-- Authentication / login flow (use Supabase default, keep it simple)
-- Role-based access control (everyone sees everything for this version)
+- Role-based access control (all authenticated users have equal access for this version)
 - Notifications or email
 - Payroll or benefits
 - File uploads for employee photos
@@ -124,6 +136,9 @@ Pre-populated data so the app looks real immediately after setup.
 
 ## Success Criteria
 
+- [ ] Login page authenticates via Supabase Auth
+- [ ] Unauthenticated users are redirected to login
+- [ ] RLS policies prevent unauthenticated database access
 - [ ] Employee directory loads with seed data
 - [ ] Can add and edit employees
 - [ ] Departments display with member counts
